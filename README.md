@@ -30,7 +30,11 @@ This project uses only **built-in Python libraries** - no extra installations ne
    python csv_to_bitwarden.py
    ```
 5. **Follow the interactive prompts** to organize your passwords
-6. **Import the resulting** `Bitwarden_Pswds.csv` into Bitwarden
+6. **Sort your passwords**:
+   ```
+   python sort.py
+   ```
+7. **Import the resulting** `Sorted_Pswds.csv` into Bitwarden
 
 ---
 
@@ -198,4 +202,5 @@ This tool works with password exports from:
 
 
 *Convert your passwords with confidence! 🔐*
+
 
