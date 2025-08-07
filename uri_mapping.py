@@ -1,0 +1,73 @@
+"""Mapping for Android app packages and common website URLs to readable names."""
+# Add more entries as you discover them!
+
+# Android app packages that don't match their readable names
+ANDROID_MAPPING = {
+    'com.zhiliaoapp.musically': ['TikTok'], # Yes, this is the package name
+    'com.facebook.katana': ['Facebook'],
+    'com.facebook.orca': ['Facebook Messenger', 'Messenger'],
+    'com.soundbrenner.pulse': ['Soundbrenner Metronome'],
+    'com.lunarlabsoftware.grouploop': ['Group Loop'],
+    'com.naver.linewebtoon': ['Webtoon'],
+    'com.paprbit.dcoder': ['DCodeR'],
+    'com.wizards.mtga': ['Magic: The Gathering Arena'],
+    'com.emagroups.tdo': ['The Dragon Oddyssey'],
+    'com.companyname.MaturaMatematyka': ['1st-12th Grade Math Problems'],
+    'com.ichi2.anki': ['AnkiDroid', 'AnkiWeb'],
+    'com.atistudios.italk.es': ['Learn Spanish. Speak Spanish'],
+
+    # Common app packages for better name suggestions
+    'com.google.android.gm': ['Gmail'],
+    'com.google.android.apps.maps': ['Google Maps'],
+    'com.google.android.youtube': ['YouTube'],
+    'com.google.android.apps.docs': ['Google Docs'],
+    'com.google.android.apps.drive': ['Google Drive'],
+    'com.google.android.apps.photos': ['Google Photos'],
+    'com.whatsapp': ['WhatsApp'],
+    'com.instagram.android': ['Instagram'],
+    'com.twitter.android': ['Twitter'],
+    'com.linkedin.android': ['LinkedIn'],
+    'com.snapchat.android': ['Snapchat'],
+    'com.discord': ['Discord'],
+    'com.spotify.music': ['Spotify'],
+    'com.netflix.mediaclient': ['Netflix'],
+    'com.amazon.mshop.android.shopping': ['Amazon'],
+    'com.paypal.android.p2pmobile': ['PayPal'],
+    'com.dropbox.android': ['Dropbox'],
+    'com.microsoft.office.outlook': ['Outlook'],
+    'com.skype.raider': ['Skype'],
+    'com.slack': ['Slack'],
+    'us.zoom.videomeetings': ['Zoom'],
+}
+
+# Common website URLs/domains mapped to readable names
+HREF_MAPPING = {
+    'accounts.google.com': ['Google Account', 'Google'],
+    'mail.google.com': ['Gmail'],
+    'drive.google.com': ['Google Drive'],
+    'docs.google.com': ['Google Docs'],
+    'sheets.google.com': ['Google Sheets'],
+    'slides.google.com': ['Google Slides'],
+    'outlook.live.com': ['Outlook', 'Microsoft Outlook'],
+    'login.live.com': ['Microsoft Account', 'Microsoft'],
+    'portal.office.com': ['Office 365', 'Microsoft Office'],
+    'onedrive.live.com': ['OneDrive'],
+    'github.com': ['GitHub'],
+    'stackoverflow.com': ['Stack Overflow'],
+    'reddit.com': ['Reddit'],
+    'twitter.com': ['X', 'Twitter'],
+    'x.com': ['X', 'Twitter'],
+    'facebook.com': ['Facebook'],
+    'instagram.com': ['Instagram'],
+    'linkedin.com': ['LinkedIn'],
+    'discord.com': ['Discord'],
+    'slack.com': ['Slack'],
+    'zoom.us': ['Zoom'],
+    'teams.microsoft.com': ['Microsoft Teams'],
+    'netflix.com': ['Netflix'],
+    'spotify.com': ['Spotify'],
+    'youtube.com': ['YouTube'],
+    'amazon.com': ['Amazon'],
+    'paypal.com': ['PayPal'],
+    'dropbox.com': ['Dropbox'],
+}
