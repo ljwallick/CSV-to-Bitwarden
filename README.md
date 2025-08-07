@@ -2,6 +2,10 @@
 
 Convert your browser-exported passwords to Bitwarden format with intelligent name detection and organization features.
 
+When you import your standard passrods from Google into Bitdefender, you'll notice some stuff missing.
+- What are these *--*? I can Favorite them? What does *reprompt* mean?
+Well, this program tries to make the transition as smooth as possible, with efficiency as my top priority.
+
 ## 🚀 Quick Start
 
 ### Install Python (Beginners)
@@ -19,12 +23,13 @@ This project uses only **built-in Python libraries** - no extra installations ne
 ### Usage
 1. **Export your passwords** from your browser as CSV file
 2. **Rename the file** to `Passwords.csv` and place it in this folder
-3. **Run the converter:**
+3. Change the directory to the folder with the file
+4. **Run the converter:**
    ```
    python csv_to_bitwarden.py
    ```
-4. **Follow the interactive prompts** to organize your passwords
-5. **Import the resulting** `Bitwarden_Pswds.csv` into Bitwarden
+5. **Follow the interactive prompts** to organize your passwords
+6. **Import the resulting** `Bitwarden_Pswds.csv` into Bitwarden
 
 ---
 
@@ -189,5 +194,6 @@ This tool works with password exports from:
 - **Skip entries** that are problematic - you can always re-run later
 
 ---
+
 
 *Convert your passwords with confidence! 🔐*
