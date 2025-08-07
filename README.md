@@ -4,6 +4,7 @@ Convert your browser-exported passwords to Bitwarden format with intelligent nam
 
 When you import your standard passrods from Google into Bitdefender, you'll notice some stuff missing.
 - What are these *--*? I can Favorite them? What does *reprompt* mean?
+
 Well, this program tries to make the transition as smooth as possible, with efficiency as my top priority.
 
 ## 🚀 Quick Start
@@ -197,3 +198,4 @@ This tool works with password exports from:
 
 
 *Convert your passwords with confidence! 🔐*
+
