@@ -3,7 +3,7 @@
 import csv
 from os import get_terminal_size, system, name as osname
 from difflib import get_close_matches
-from uri_mapping import ANDROID_MAPPING, HREF_MAPPING
+from uri_mapping import ANDROID_MAPPING, URL_MAPPING
 
 clr = ('clear', 'cls')[osname == 'nt']
 
@@ -32,6 +32,10 @@ def main():
                     to_bitwarden.clear()
                     continue
 
+                if row[0].startswith('android://'):
+                    # This is the app link format Bitwarden uses
+                    row[0] = ''.join(['androidapp://', row[0].rsplit('@', 1)[1].rstrip('/')])
+
                 name, capitalized = get_names(row[0])
 
                 confirm = { f"{j+1})": f"{n if capitalized else n.title()}, "
@@ -42,8 +46,8 @@ def main():
                     system(clr)
                     print("Type 'skip' to skip an entry. Will not return to it.")
 
-                    if row[0].startswith('android://'):
-                        print('App: @' + row[0].rsplit('@', 1)[1].rstrip('/'), end='; ')
+                    if row[0].startswith('androidapp://'):
+                        print('App Link: ' + row[0], end='; ')
                     else:
                         if '://' in row[0]:
                             c = row[0].count('/')
@@ -89,7 +93,9 @@ def main():
                     print('Press Enter to skip or deny any of the following:')
                     favorite = int( bool( input("Favorite? ") ) )
                     notes = input('Notes? ')
-                    reprompt = int( bool( input('Require Bitwarden verification? ') ) )
+                    reprompt = int( bool(
+                        input('Require master password to view entry in Bitwarden? ')
+                    ) )
                     totp = input('Do you have a TOTP key? ')
 
                 to_bitwarden += [folder, favorite, 'login', new_name, notes,\
@@ -98,12 +104,12 @@ def main():
                 pswd_writer.writerow(to_bitwarden)
                 to_bitwarden.clear()
 
-def get_names(row:str) -> tuple[list[str], bool]:
+def get_names(link:str) -> tuple[list[str], bool]:
     """Gets the possible names from the link"""
 
     capitalized = False
-    if row.startswith('android://'):
-        name = row.rsplit('@', 1)[1].rstrip('/')
+    if link.startswith('androidapp://'):
+        name = link.split('://')[-1]
         app_names = ANDROID_MAPPING.get(name, None)
         if app_names:
             # If it is in the dictionary, then we know the name(s)
@@ -115,7 +121,7 @@ def get_names(row:str) -> tuple[list[str], bool]:
                 name = name.split('.', 1)[1]
             name = name.split('.')
     else:
-        name = row.split('/')
+        name = link.split('/')
         if name[0].startswith('http'):
             # ['https:', '', 'docs.google.com', '...']
             name = name[2]
@@ -124,22 +130,22 @@ def get_names(row:str) -> tuple[list[str], bool]:
         if name.startswith(('www', 'ww1')):
             name = name.split('.', 1)[1]
 
-        web_names = None  # Initialize to fix the warning
-        temp_name = name.split('.')
+        web_names = None
+        domains = name.split('.')
 
         # Try progressively shorter domains
-        for i in range(len(temp_name)):
-            current_domain = '.'.join(temp_name[i:])
-            web_names = HREF_MAPPING.get(current_domain, None)
+        for i in range(len(domains)):
+            current_domain = '.'.join(domains[i:])
+            web_names = URL_MAPPING.get(current_domain, None)
             if web_names:
                 break  # Found a match!
 
             # Stop at domain.tld (don't go to just .com)
-            if len(temp_name[i:]) <= 2:
+            if len(domains[i:]) <= 2:
                 break
 
         if web_names:
-            # If it is in the dictionary, then we know the names(s)
+            # If it is in the dictionary, then we know the name(s)
             name = web_names
             capitalized = True
         else:
@@ -155,15 +161,8 @@ def get_names(row:str) -> tuple[list[str], bool]:
 class Folders():
     """Class that holds all folders and functions for folder creation"""
     def __init__(self, do_main=True):
-        # Predefined list of common categories
-        self.folder_list = [
-            "Personal", "Work", "Social Media", "Banking", "Shopping", 
-            "Entertainment", "Gaming", "Email", "Streaming", "News",
-            "Education", "Health", "Travel", "Utilities", "Government",
-            "Insurance", "Finance", "Subscriptions", "Forums", 
-            "Music", "Sports", "Photography", "Food", "Tech",
-            "Cloud Storage", "Security", "VPN", "Messaging"
-        ]
+        # Test list for subfolder display formatting - long names to test multi-line display
+        self.folder_list = []
         self.size = get_terminal_size().columns
         if do_main:
             self.main()
@@ -172,6 +171,7 @@ class Folders():
         """Basically the main body to create, view, and find folders"""
 
         while True:
+            print("To make subfolders, put '/' between each name")
             inp = input("Name a folder or type 'list folders' to view all.\n  > ")
             # See if they want to display folders
             if inp.lower() == 'list folders':
@@ -179,9 +179,10 @@ class Folders():
                 continue
             elif not inp:
                 return ''
-            # Not too long, now!
-            if len(inp) > 25:
-                print('Are you trying to rename a protein, titin? Please make a smaller name!')
+            # Not too long, now! Check each subfolder separately
+            subfolders = inp.split('/')
+            if any(len(subfolder.strip()) > 12 for subfolder in subfolders):
+                print('Each folder/subfolder name must be 12 characters or less!')
                 continue
 
             result = self.get_folder(inp)
@@ -194,27 +195,61 @@ class Folders():
         self.folder_list.append(name)
 
     def list_folders(self):
-        """Lists the folders to see their names"""
+        """Lists the folders sorted by subfolder depth, with dynamic spacing"""
         if not self.folder_list:
             print('There are no folders, you dum dum!')
             return
-        if self.size <= 25:
-            # 25 is the allowed length of a single term (which is long, still)
-            print(*self.folder_list, sep=', ')
-            return
-        length = sum(len(n) for n in self.folder_list) + (len(self.folder_list)-1) * 2
-        if length < self.size:
-            print(*self.folder_list, sep='  ')
-            return
-        # How wide each term should be
-        term_width = max(len(n) for n in self.folder_list)
-        # How many terms can fit on each line
-        terms_wide = self.size // (term_width + 2*(len(self.folder_list)!=1) )
-
-        terms = list(map(lambda x: x + ' ' * (term_width - len(x)), self.folder_list))
-
-        for line_start in range(0, len(self.folder_list), terms_wide):
-            print('  '.join(terms[line_start:line_start + terms_wide]))
+        
+        # Sort folders by number of subfolders (descending), then alphabetically
+        def subfolder_count(folder_name):
+            return folder_name.count('/')
+        
+        sorted_folders = sorted(self.folder_list, key=lambda f: (-subfolder_count(f), f.lower()))
+        
+        # Group by subfolder count for dynamic spacing
+        current_depth = -1
+        current_group = []
+        all_groups = []
+        
+        for folder in sorted_folders:
+            depth = subfolder_count(folder)
+            if depth != current_depth:
+                if current_group:
+                    all_groups.append(current_group)
+                current_group = [folder]
+                current_depth = depth
+            else:
+                current_group.append(folder)
+        
+        if current_group:
+            all_groups.append(current_group)
+        
+        # Display each group with appropriate spacing
+        for group in all_groups:
+            if len(group) == 1:
+                print(group[0])
+                continue
+                
+            # Calculate optimal spacing for this group
+            max_width = max(len(folder) for folder in group)
+            
+            if self.size <= max_width + 4:
+                # Terminal too narrow, display one per line
+                for folder in group:
+                    print(folder)
+            else:
+                # Calculate how many can fit per line
+                spacing = 2
+                terms_per_line = self.size // (max_width + spacing)
+                terms_per_line = max(1, terms_per_line)  # At least 1 per line
+                
+                # Pad folders to consistent width within group
+                padded_folders = [folder.ljust(max_width) for folder in group]
+                
+                # Display in rows
+                for i in range(0, len(padded_folders), terms_per_line):
+                    row = padded_folders[i:i + terms_per_line]
+                    print('  '.join(row))
 
     def get_folder(self, folder):
         """Gets the folder to be used"""
